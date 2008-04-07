@@ -1,0 +1,40 @@
+formattime - A date/time string formatter
+============================================
+
+:Author: Yongjian (Jim) Xu <i3dmaster@gmail.com>
+
+
+Introduction
+~~~~~~~~~~~
+
+This is a library to formatting various different time string to
+standardized Internet date time formats. Compatible with iso8601 and RFC 3339
+formats.
+
+
+Installation
+~~~~~~~~~~~
+
+This is a standard Python distutils distribution. To install the
+package, run the following command as an administrative user::
+
+    python setup.py install
+
+
+Examples:
+formattime.ToUTC('today')
+formattime.ToUTC('+30d')
+formattime.ToUTC('+5m')
+formattime.ToUTC('+2y')
+formattime.ToUTC('20/11/2008')
+formattime.ToUTC('Mar 30, 2008')
+formattime.ToUTC('11-20-2008')
+formattime.ToUTC('11/31/08 11:30')
+...
+
+Support 30+ different kinds of time string convertions.
+
+All ToUTC method has ToLocal method accordingly. The ToLocal and ToUTC handles
+TimeZone and DST automatically.
+
+See the COPYING file for the license this package is released under.

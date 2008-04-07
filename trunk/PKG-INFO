@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: formattime
+Version: 0.5
+Summary: Python API for date/time formatting
+Home-page: http://code.google.com/p/formattime/
+Author: Yongjian (Jim) Xu
+Author-email: i3dmaster@gmail.com
+License: LGPL
+Description: formattime supports more than 30 different time-like strings and
+format them into standard internet time strings according to RFC 3339 and ISO
+8601
+Keywords: date,time,datetime,strftime,Python,formattime
+Platform: UNKNOWN
