@@ -1,0 +1,17 @@
+~~~ 0.5 ~~~
+April 8, 2008
+
+* fix DST parsing issue.
+* fix ToLocal/ToUTC time formatting issue.
+* remove supporting for leap min/second so that the module will be sure
+  support both RFC3339 and ISO8601 fully.
+* Add dateutil so that the module supports another 10+ different time
+  input formattime, such as '11:30 am", "April 10, 2008', etc.
+* fix timezone parsing issue by using pytz as the base timezone
+  parsing module.
+
+
+~~~ 0.1 ~~~
+July 21, 2007
+
+Initial Release
