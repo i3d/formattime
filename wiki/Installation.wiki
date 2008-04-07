@@ -1,0 +1,13 @@
+#Installation Instruction
+
+= Installation =
+
+The installation for formattime is pretty straightforward.
+1. download the package.
+2. unbzip and untar it by 'tar xvfjp package_name-VERSION.tar.bz2'
+3. cd package_name-VERSION
+4. run 'sudo python setup.py install' (the setuptool will get it installed to your python runtime library location)
+
+= Test =
+
+The formattime module contains a unittest to test its correctness. Just run 'formattime_test.py'.
