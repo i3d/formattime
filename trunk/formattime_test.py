@@ -263,19 +263,40 @@ class FormatTimeTestCase(unittest.TestCase):
     time.tzset()
 
   def testFormatTimeMonthDateWithTime(self):
-    time_str = '1/9 10:00'
-    utc_t = '2008-01-09T18:00:00.000Z'
+    local_today = datetime.today()
+    utcnow = datetime.utcnow()
+    time_str = '%s/%s %s:%s' % (local_today.month, local_today.day,
+                                local_today.hour, local_today.minute)
+    utc_t = utcnow.strftime('%Y-%m-%dT%H:%M:00.000Z')
     self.assertEqual(utc_t, formattime.ToUTC(time_str))
 
   def testFormatTimeMonthDateWithTime2(self):
-    time_str = '1/9 10:00:11'
-    utc_t = '2008-01-09T18:00:11.000Z'
+    local_today = datetime.today()
+    utcnow = datetime.utcnow()
+    time_str = '%s/%s %s:%s:%s' % (local_today.month, local_today.day,
+                                   local_today.hour, local_today.minute,
+                                   local_today.second)
+    utc_t = utcnow.strftime('%Y-%m-%dT%H:%M:%S.000Z')
     self.assertEqual(utc_t, formattime.ToUTC(time_str))
 
   def testFormatTimeDateTimePickerFormat(self):
     t1 = formattime.ToLocal('4/1/2008')
     t2 = formattime.ToLocal('April 1, 2008')
     self.assertEqual(t1, t2)
+
+  def testFormatTimeDstDiff(self):
+     os.environ['TZ'] = 'Asia/Shanghai'
+     time.tzset()
+     shanghai = formattime.pytz.timezone('Asia/Shanghai')
+     local_tz = formattime.parser.tz.tzlocal()
+     local_date = datetime(2029, 07, 06, tzinfo=local_tz)
+     utcoffset = shanghai.utcoffset(local_date).seconds/3600
+     formatted_time = formattime.ToUTC(local_date.strftime('%m-%d-%Y'))
+     m = re.search(r'T(?P<tz>[0-9][0-9]):', formatted_time)
+     self.assertEquals(utcoffset, int(m.group('tz')))
+     del os.environ['TZ']
+     time.tzset()
+
 
 if __name__ == '__main__':
   unittest.main()
