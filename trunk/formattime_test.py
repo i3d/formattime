@@ -31,6 +31,11 @@ import formattime
 
 class FormatTimeTestCase(unittest.TestCase):
 
+  def setUp(self):
+    self.timestamp = time.time()
+    self.local_now = datetime.fromtimestamp(self.timestamp)
+    self.utc_now = datetime.utcfromtimestamp(self.timestamp)
+
   def testMatchFullTimeLeapSeconds(self):
     # by using iso8601. this is no longer a valid time format.
     ft = '1997-07-01T23:59:60Z'
@@ -263,20 +268,16 @@ class FormatTimeTestCase(unittest.TestCase):
     time.tzset()
 
   def testFormatTimeMonthDateWithTime(self):
-    local_today = datetime.today()
-    utcnow = datetime.utcnow()
-    time_str = '%s/%s %s:%s' % (local_today.month, local_today.day,
-                                local_today.hour, local_today.minute)
-    utc_t = utcnow.strftime('%Y-%m-%dT%H:%M:00.000Z')
+    time_str = '%s/%s %s:%s' % (self.local_now.month, self.local_now.day,
+                                self.local_now.hour, self.local_now.minute)
+    utc_t = self.utc_now.strftime('%Y-%m-%dT%H:%M:00.000Z')
     self.assertEqual(utc_t, formattime.ToUTC(time_str))
 
   def testFormatTimeMonthDateWithTime2(self):
-    local_today = datetime.today()
-    utcnow = datetime.utcnow()
-    time_str = '%s/%s %s:%s:%s' % (local_today.month, local_today.day,
-                                   local_today.hour, local_today.minute,
-                                   local_today.second)
-    utc_t = utcnow.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+    time_str = '%s/%s %s:%s:%s' % (self.local_now.month, self.local_now.day,
+                                   self.local_now.hour, self.local_now.minute,
+                                   self.local_now.second)
+    utc_t = self.utc_now.strftime('%Y-%m-%dT%H:%M:%S.000Z')
     self.assertEqual(utc_t, formattime.ToUTC(time_str))
 
   def testFormatTimeDateTimePickerFormat(self):
@@ -285,17 +286,20 @@ class FormatTimeTestCase(unittest.TestCase):
     self.assertEqual(t1, t2)
 
   def testFormatTimeDstDiff(self):
-     os.environ['TZ'] = 'Asia/Shanghai'
-     time.tzset()
-     shanghai = formattime.pytz.timezone('Asia/Shanghai')
-     local_tz = formattime.parser.tz.tzlocal()
-     local_date = datetime(2029, 07, 06, tzinfo=local_tz)
-     utcoffset = shanghai.utcoffset(local_date).seconds/3600
-     formatted_time = formattime.ToUTC(local_date.strftime('%m-%d-%Y'))
-     m = re.search(r'T(?P<tz>[0-9][0-9]):', formatted_time)
-     self.assertEquals(utcoffset, int(m.group('tz')))
-     del os.environ['TZ']
-     time.tzset()
+    old_tz = os.environ.get('TZ')
+    os.environ['TZ'] = 'Asia/Shanghai'
+    time.tzset()
+    shanghai = formattime.pytz.timezone('Asia/Shanghai')
+    local_t = shanghai.localize(self.local_now)
+    formatted_time = formattime.ToUTC(local_t.isoformat())
+    utc_t = formattime.parser.parse(formatted_time)
+    self.assertEquals(local_t.utcoffset().seconds,
+                      utc_t.astimezone(shanghai).utcoffset().seconds)
+    if not old_tz:
+      del os.environ['TZ']
+    else:
+      os.environ['TZ'] = old_tz
+    time.tzset()
 
 
 if __name__ == '__main__':
